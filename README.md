@@ -4,7 +4,7 @@
 
 <h2>フォーク手順</h2>
 
-1. https://github.com/daichi-tokunaga/kadai-app/fork にアクセス
+1. https://github.com/daichi-tokunaga/kadai-app-7/fork にアクセス
 
 1. Ownerが自分のアカウント、Repository nameがkadai-appになっていることを確認
 
