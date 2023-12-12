@@ -1,0 +1,43 @@
+body {
+    background-color: whitesmoke;
+}
+
+.page {
+    margin: 60px 0 60px 0;
+}
+
+.font-red {
+    color: red;
+}
+
+.font-blue {
+    color: blue;
+}
+
+button {
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.button-white {
+    background-color: white;
+    color: rgb(35, 35, 35);
+    border-color: lightgray;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.button-white:active {
+    background-color: lightgray;
+    ;
+}
+
+.button-black {
+    background-color: black;
+    color: whitesmoke;
+}
+
+.button-black:active {
+    background-color: whitesmoke;
+    color: black;
+}
