@@ -17,6 +17,7 @@ class User extends Model
     public function posts()
     {
         return Post::where('user', $this->id)
+            ->where( )
             ->orderBy('created_at', 'desc')
             ->get();
     }
