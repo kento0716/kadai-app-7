@@ -16,12 +16,11 @@ class User extends Model
      */
     public function posts()
     {
-        return Post::where('user', $this->id)
-            ->where( )
+        return Post::where('user', $this->id) 
+            ->where('is_deleted', 0)
             ->orderBy('created_at', 'desc')
             ->get();
     }
-
     /**
      * ユーザーがフォローしているユーザーのリストを取得する
      */
