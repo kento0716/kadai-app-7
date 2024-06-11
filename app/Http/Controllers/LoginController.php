@@ -45,6 +45,9 @@ class LoginController extends Controller
      */
     public function logout()
     {
+        session_start();
+        $_SESSION = array();
+
         return redirect('/login');
     }
 }
