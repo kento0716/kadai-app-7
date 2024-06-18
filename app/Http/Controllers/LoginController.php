@@ -43,11 +43,10 @@ class LoginController extends Controller
     /**
      * ログアウト処理
      */
-    public function logout()
+    public function logout(Request $request)
     {
-        session_start();
-        $_SESSION = array();
-
-        return redirect('/login');
+        $user = User::where('email', $request->email)->first();
+        Session::flush('user', $user);
+      return redirect('/login');
     }
 }
