@@ -70,7 +70,9 @@ class PostController extends Controller
             // ログイン中のユーザーの情報を取得する
             $loginUser = Session::get('user');
             // 自分自身の投稿ページか判定
-            $isOwnPost = $loginUser->id == $user->id;
+            if ($loginUser->id != $user->id) {
+            return redirect('/'); 
+            }
         }
 
         // 画面表示

@@ -113,7 +113,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('user.signup');
+        $errorMessage = null;
+        return view('user.signup',compact('errorMessage'));
     }
 
     /**
@@ -122,6 +123,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         //TODO 登録処理
+        $post = new 
 
         return redirect('/');
     }
