@@ -53,8 +53,7 @@ php artisan db:seed
 <h3>起動</h3>
 
 ```
-php artisan serve
-```
+```php artisan serve
 
 <h3>アクセスURL</h3>
 

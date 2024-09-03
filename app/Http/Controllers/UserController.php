@@ -104,7 +104,7 @@ class UserController extends Controller
         $user->save();
 
         // 画面表示
-        return redirect('/user/' . $user->id);
+        return redirect('/user' . $user->id);
     }
 
 
