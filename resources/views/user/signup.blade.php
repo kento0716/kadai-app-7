@@ -14,14 +14,30 @@
 <body class="">
     <x-header></x-header>
     <div class="page singup-page">
-        <h2>課題: ここに新規登録ページを作ること</h2>
-        <h3>必要なフォームパーツ</h3>
+        <h2><form class="form" action="/login" method="post"></h2>
+        <h3><div class="form-item email"></h3>
         <ul>
-            <li>Email入力フォーム</li>
-            <li>パスワード入力フォーム</li>
-            <li>登録ボタン</li>
+            <li><label for="email">Email</label></li>
+            <input type="text" id="email" name="email" /></li>
+            
+            <li><div class="form-item password">
+            <label for="password">Password</label>
+                <input type="password" id="password" name="password" />
+            
+            </div>
+            @if ($errorMessage)
+            <div class="error-message font-red">{{ $errorMessage }}</div>
+            @endif
+            <div class="login-button">
+                <button class="button-white" type="submit">login</button>
+            </div>
+        </form>
+    </div>
+</body></li>
         </ul>
-        <h3>バリデーションルール</h3>
+        <h3>バリデーションルール  action="/tasks/{{ $item->id }}"
+    method="post"
+        </h3>
         <h4>メールアドレス</h4>
         <ul>
             <li>●●●@×××の形式になっていること</li>

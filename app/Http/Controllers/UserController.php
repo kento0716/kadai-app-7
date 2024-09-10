@@ -123,7 +123,10 @@ class UserController extends Controller
     public function store(Request $request)
     {
         //TODO 登録処理
-        $post = new 
+        $post = new Post;
+        $post->user = $loginUser->id;
+        $post->content = $request->postContent;
+        $post->save();
 
         return redirect('/');
     }
