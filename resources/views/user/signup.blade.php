@@ -38,12 +38,15 @@
         <h3>バリデーションルール  action="/tasks/{{ $item->id }}"
     method="post"
         </h3>
-        <h4>メールアドレス</h4>
+        <h4> <label for="email">Email</label></h4>
         <ul>
-            <li>●●●@×××の形式になっていること</li>
+            <li> <div class="form-item email">
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" />
+            </div></li>
             <li>半角英数、記号のみを許容すること</li>
         </ul>
-        <h4>パスワード</h4>
+        <h4><div class="form-item password"></h4>
         <ul>
             <li>半角英数、記号のみを許容すること</li>
             <li>8文字以上であること</li>
@@ -54,6 +57,48 @@
     </div>
 </body>
 <script src="{{ asset('/js/app.js') }}"></script>
-<style scoped></style>
-
+<style scoped>
+.login-page {
+        display: flex;
+        justify-content: center;
+    }
+    
+    .login-page .title {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .login-page .form {
+        width: 60vw;
+    }
+    
+    .login-page input {
+        height: 30px;
+        border-radius: 10px;
+        background-color: lightgray;
+    }
+    
+    .login-page .form-item {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+    }
+    
+    .login-page .login-button {
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    .login-page button {
+        width: 50%;
+        height: 30px;
+        font-size: 18px;
+    }
+    
+    .login-page .error-message {
+        margin-top: 5px;
+        font-size: 10px;
+    }
+</style>
 </html>
