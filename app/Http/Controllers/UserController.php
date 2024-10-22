@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller,
-    Session;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth; // 追加
 use App\Models\User;
 
 class UserController extends Controller
@@ -14,28 +14,29 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        // セッションにログイン情報があるか確認
-        if (!Session::exists('user')) {
-            // ログインしていなければログインページへ
-            return redirect('/login');
-        }
+               // セッションにログイン情報があるか確認
+        if (!Auth::check()) {
+                // ログインしていなければログインページへ
+                return redirect('/login');
+            }
 
         // 指定したIDのユーザー情報を取得する
         $user = User::find($id);
+
         // ユーザーが存在するか判定
-        if ($user == null) {
-            return dd('存在しないユーザーです');
+        if (!$user) {
+            return abort(404, '存在しないユーザーです'); // 修正: より適切なエラーメッセージを使用
         }
 
         // ユーザーの投稿を取得
-        $posts = $user->posts();
+        $posts = $user->posts;
+
         // フォロー/フォロワー数の取得
-        $followCount = count($user->followUsers());
-        $followerCount = count($user->followerUsers());
+        $followCount = $user->followUsers()->count();
+        $followerCount = $user->followerUsers()->count();
 
         // ログイン中のユーザーの情報を取得する
-        $loginUser = Session::get('user');
-        // 自分自身のユーザーページか判定
+        $loginUser = Auth::user(); // 修正: Auth::user() で現在のログインユーザーを取得
         $isOwnPage = $loginUser->id == $user->id;
 
         // フォロー済みかどうか判定
@@ -54,17 +55,20 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::find($id);
+
         // ユーザーが存在するか判定
-        if ($user == null) {
-            return dd('存在しないユーザーです');
+        if (!$user) {
+            return abort(404, '存在しないユーザーです'); // 修正: abort() でエラーハンドリング
         }
-        // セッションにログイン情報があるか確認
-        if (!Session::exists('user')) {
-            return redirect('/');
+
+        // ログイン中かどうか確認
+        if (!Auth::check()) {
+            return redirect('/login');
         }
 
         // ログイン中のユーザーの情報を取得する
-        $loginUser = Session::get('user');
+        $loginUser = Auth::user();
+
         // 自分自身のユーザーページか判定
         if ($loginUser->id != $user->id) {
             return redirect('/');
@@ -82,31 +86,32 @@ class UserController extends Controller
         // idからユーザーを取得
         $user = User::find($id);
 
-        // 投稿が存在するか判定
-        if ($user == null) {
-            return dd('存在しないユーザーです');
+        // ユーザーが存在するか判定
+        if (!$user) {
+            return abort(404, '存在しないユーザーです');
         }
-        // セッションにログイン情報があるか確認
-        if (!Session::exists('user')) {
-            return redirect('/');
+
+        // ログイン中かどうか確認
+        if (!Auth::check()) {
+            return redirect('/login');
         }
 
         // ログイン中のユーザーの情報を取得する
-        $loginUser = Session::get('user');
-        // 自分自身の投稿ページか判定
+        $loginUser = Auth::user();
+
+        // 自分自身のプロフィールかどうか判定
         if ($loginUser->id != $user->id) {
             return redirect('/');
         }
 
         // データ登録
-        $user->name = $request->username;
-        $user->biography = $request->biography;
+        $user->name = $request->input('username');
+        $user->biography = $request->input('biography');
         $user->save();
 
         // 画面表示
-        return redirect('/user' . $user->id);
+        return redirect('/user/' . $user->id);
     }
-
 
     /**
      * 新規登録画面遷移
@@ -114,7 +119,7 @@ class UserController extends Controller
     public function create()
     {
         $errorMessage = null;
-        return view('user.signup',compact('errorMessage'));
+        return view('user.signup', compact('errorMessage'));
     }
 
     /**
@@ -122,12 +127,23 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //TODO 登録処理
-        $post = new Post;
-        $post->user = $loginUser->id;
-        $post->content = $request->postContent;
-        $post->save();
+        // バリデーションの追加
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed', // パスワード確認フィールドを追加
+        ]);
 
-        return redirect('/');
+        // 新規ユーザー作成
+        $user = new User;
+        $user->name = $request->input('username');
+        $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password')); // パスワードをハッシュ化して保存
+        $user->save();
+
+        // 自動的にログインさせる
+        Auth::login($user);
+
+        return redirect('/')->with('success', 'アカウントが作成されました');
     }
 }
