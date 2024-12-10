@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth; // 追加
+use App\Http\Controllers\Controller,Session;
 use App\Models\User;
 
 class UserController extends Controller
@@ -14,11 +13,11 @@ class UserController extends Controller
      */
     public function show($id)
     {
-               // セッションにログイン情報があるか確認
-        if (!Auth::check()) {
-                // ログインしていなければログインページへ
-                return redirect('/login');
-            }
+        // セッションにログイン情報があるか確認
+        if (!Session::exists('user')) {
+            // ログインしていなければログインページへ
+            return redirect('/login');
+        }
 
         // 指定したIDのユーザー情報を取得する
         $user = User::find($id);
@@ -29,11 +28,11 @@ class UserController extends Controller
         }
 
         // ユーザーの投稿を取得
-        $posts = $user->posts;
+        $posts = $user->posts();
 
         // フォロー/フォロワー数の取得
-        $followCount = $user->followUsers()->count();
-        $followerCount = $user->followerUsers()->count();
+        $followCount = count($user->followusers());
+        $followerCount = count($user->followerurusers());
 
         // ログイン中のユーザーの情報を取得する
         $loginUser = Auth::user(); // 修正: Auth::user() で現在のログインユーザーを取得
@@ -57,13 +56,13 @@ class UserController extends Controller
         $user = User::find($id);
 
         // ユーザーが存在するか判定
-        if (!$user) {
-            return abort(404, '存在しないユーザーです'); // 修正: abort() でエラーハンドリング
+        if (!$user==null) {
+            return dd(404, '存在しないユーザーです'); 
         }
 
-        // ログイン中かどうか確認
-        if (!Auth::check()) {
-            return redirect('/login');
+        // セッションログイン情報があるかどうか確認
+        if (!sessin::exists('user')) {
+            return redirect('/');
         }
 
         // ログイン中のユーザーの情報を取得する
@@ -86,31 +85,27 @@ class UserController extends Controller
         // idからユーザーを取得
         $user = User::find($id);
 
-        // ユーザーが存在するか判定
-        if (!$user) {
-            return abort(404, '存在しないユーザーです');
+        // 投稿が存在するか判定
+        if (!$user==null) {
+            return dd(404, '存在しないユーザーです');
         }
 
-        // ログイン中かどうか確認
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
+        
 
         // ログイン中のユーザーの情報を取得する
-        $loginUser = Auth::user();
+        $loginUser = Session::get('user');
 
-        // 自分自身のプロフィールかどうか判定
-        if ($loginUser->id != $user->id) {
+        // 自分自身の投稿ページか判定
+        if($loginUser->id!=$user->id){
             return redirect('/');
-        }
-
+        } 
         // データ登録
-        $user->name = $request->input('username');
-        $user->biography = $request->input('biography');
+        $user->name = $request->username;
+        $user->biography = $request->biography;
         $user->save();
 
         // 画面表示
-        return redirect('/user/' . $user->id);
+        return redirect('/user' . $user->id);
     }
 
     /**
@@ -121,9 +116,7 @@ class UserController extends Controller
         $errorMessage = null;
         return view('user.signup', compact('errorMessage'));
     }
-
     /**
-     * 新規登録処理
      */
     public function store(Request $request)
     {
