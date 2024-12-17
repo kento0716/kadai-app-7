@@ -12,7 +12,7 @@ class HomeController extends Controller
     /**
      * ホーム画面遷移
      */
-    public function index(Request $request)
+    public function index(Request $requsest)
     {
         // セッションにログイン情報があるか確認
         if (!Session::exists('user')) {
@@ -22,11 +22,11 @@ class HomeController extends Controller
 
         // ログイン中のユーザーの情報を取得する
         $loginUser = Session::get('user');
-
         // フォローしているユーザーを取得
-        $users = $loginUser->followUsers();
+        $users = $loginUser->user();
         // ログインしているユーザー自身も表示に含める
         array_push($users, $loginUser);
+
         // 各ユーザーの投稿を取得
         $posts = [];
         foreach ($users as $user) {
